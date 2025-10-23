@@ -1,21 +1,30 @@
+import 'package:uuid/uuid.dart';
+
+var uuid = Uuid();
+
 class Question {
+  final String id;
   final String title;
   final List<String> choices;
   final String goodChoice;
   final int queScore; //Ex2
 
   Question(
-      {required this.title,
+      {String? id,
+      required this.title,
       required this.choices,
       required this.goodChoice,
-      this.queScore = 1});
+      this.queScore = 1})
+      : id = id ?? uuid.v4();
 }
 
 class Answer {
+  final String id;
   final Question question;
   final String answerChoice;
 
-  Answer({required this.question, required this.answerChoice});
+  Answer({String? id, required this.question, required this.answerChoice, required String questionId})
+      : id = id ?? uuid.v4();
 
   bool isGood() {
     return this.answerChoice == question.goodChoice;
@@ -23,11 +32,12 @@ class Answer {
 }
 
 class Quiz {
+  final String id;
   List<Question> questions;
   List<Answer> answers = [];
   int index = 0;
 
-  Quiz({required this.questions});
+  Quiz({String? id, required this.questions}) : id = id ?? uuid.v4();
 
   void addAnswer(Answer asnwer) {
     this.answers.add(asnwer);
@@ -56,23 +66,31 @@ class Quiz {
 
 ///EX3 implementation
 class Submission {
-  final Player player;
-  final Quiz quiz;
+  final String id;
+  // final Player player;
+  // final Quiz quiz;
+  final String playerId;
+  final String quizId;
   final int scorePoint;
   final int scorePercentage;
 
   Submission(
-      {required this.player,
-      required this.quiz,
+      {String? id,
+      // required this.player,
+      // required this.quiz,
+      required this.quizId,
+      required this.playerId,
       required this.scorePoint,
-      required this.scorePercentage});
+      required this.scorePercentage, required Player player, required Quiz quiz})
+      : id = id ?? uuid.v4();
 }
 
 class Player {
+  final String id;
   final String name;
   Submission? lastSubmission;
 
-  Player(this.name);
+  Player(this.name, {String? id}) : id = id ?? uuid.v4();
 }
 
 class Game {

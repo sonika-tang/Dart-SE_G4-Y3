@@ -47,7 +47,7 @@ class QuizConsole {
         String? userInput = stdin.readLineSync();
 
         if (userInput != null && userInput.isNotEmpty) {
-          Answer answer = Answer(question: question, answerChoice: userInput);
+          Answer answer = Answer(question: question, answerChoice: userInput, questionId: '');
           playerQuiz.addAnswer(answer);
         } else {
           print("No answer!! Skipping question");
@@ -63,7 +63,7 @@ class QuizConsole {
         player: player,
         quiz: playerQuiz,
         scorePoint: scorePoints,
-        scorePercentage: scorePercent,
+        scorePercentage: scorePercent, quizId: '', playerId: '',
       );
 
       game.addSubmission(player, submission);

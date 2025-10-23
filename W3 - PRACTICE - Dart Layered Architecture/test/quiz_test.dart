@@ -1,5 +1,6 @@
 import 'package:my_first_project/domain/quiz.dart';
 import 'package:test/test.dart';
+import 'package:my_first_project/data/quiz_file_provider.dart';
 
 main() {
   // Create 2 questions and the quiz
@@ -24,8 +25,8 @@ main() {
 
   test('All answers are good (100%)', () {
     // Create the answer here
-    Answer a1 = Answer(question: q1, answerChoice: "4");
-    Answer a2 = Answer(question: q2, answerChoice: "5");
+    Answer a1 = Answer(question: q1, answerChoice: "4", questionId: '');
+    Answer a2 = Answer(question: q2, answerChoice: "5", questionId: '');
 
     quiz.answers = [a1, a2];
 
@@ -35,8 +36,8 @@ main() {
 
   test('Answers are 50% correct', () {
     // Create the answer here
-    Answer a1 = Answer(question: q1, answerChoice: "2");
-    Answer a2 = Answer(question: q2, answerChoice: "5");
+    Answer a1 = Answer(question: q1, answerChoice: "2", questionId: '');
+    Answer a2 = Answer(question: q2, answerChoice: "5", questionId: '');
 
     quiz.answers = [a1, a2];
 
@@ -46,8 +47,8 @@ main() {
 
   test('Answers are 0% correct', () {
     // Create the answer here
-    Answer a1 = Answer(question: q1, answerChoice: "2");
-    Answer a2 = Answer(question: q2, answerChoice: "1");
+    Answer a1 = Answer(question: q1, answerChoice: "2", questionId: '');
+    Answer a2 = Answer(question: q2, answerChoice: "1", questionId: '');
 
     quiz.answers = [a1, a2];
 
@@ -58,8 +59,8 @@ main() {
 // Test with quiz that have answer
   test('All answers are good 100% and full points (for quiz that have point)',
       () {
-    Answer a1 = Answer(question: q3, answerChoice: "1");
-    Answer a2 = Answer(question: q4, answerChoice: "10");
+    Answer a1 = Answer(question: q3, answerChoice: "1", questionId: '');
+    Answer a2 = Answer(question: q4, answerChoice: "10", questionId: '');
     quiz2.answers = [a1, a2];
 
     expect(quiz2.getScoreInPoint(), equals(60));
@@ -70,15 +71,15 @@ main() {
     test('Player score is saved', () {
     Player p1 = Player("Nika");
     quiz.answers = [
-      Answer(question: q3, answerChoice: "1"),
-      Answer(question: q4, answerChoice: "10"),
+      Answer(question: q3, answerChoice: "1", questionId: ''),
+      Answer(question: q4, answerChoice: "10", questionId: ''),
     ];
 
     Submission s1 = Submission(
       player: p1,
       quiz: quiz2,
       scorePoint: quiz2.getScoreInPoint(),
-      scorePercentage: quiz2.getScoreInPercentage(),
+      scorePercentage: quiz2.getScoreInPercentage(), quizId: '', playerId: '',
     );
 
     game.addSubmission(p1, s1);
@@ -93,28 +94,28 @@ main() {
 
     // First attempt: correct one (10 points)
     quiz.answers = [
-      Answer(question: q3, answerChoice: "1"),
-      Answer(question: q4, answerChoice: "20"),
+      Answer(question: q3, answerChoice: "1", questionId: ''),
+      Answer(question: q4, answerChoice: "20", questionId: ''),
     ];
     Submission s1 = Submission(
       player: p1,
       quiz: quiz2,
       scorePoint: quiz2.getScoreInPoint(),
-      scorePercentage: quiz2.getScoreInPercentage(),
+      scorePercentage: quiz2.getScoreInPercentage(), quizId: '', playerId: '',
     );
     game.addSubmission(p1, s1);
 
     // Second attempt: all wrong
     Quiz quiz3 = Quiz(questions: [q3, q4]);
     quiz2.answers = [
-      Answer(question: q3, answerChoice: "2"),
-      Answer(question: q4, answerChoice: "20"),
+      Answer(question: q3, answerChoice: "2", questionId: ''),
+      Answer(question: q4, answerChoice: "20", questionId: ''),
     ];
     Submission s2 = Submission(
       player: p1,
       quiz: quiz3,
       scorePoint: quiz3.getScoreInPoint(),
-      scorePercentage: quiz3.getScoreInPercentage(),
+      scorePercentage: quiz3.getScoreInPercentage(), quizId: '', playerId: '',
     );
     game.addSubmission(p1, s2);
 
@@ -122,5 +123,24 @@ main() {
     expect(game.players.length, equals(1)); // still one player
     expect(game.players.first.lastSubmission?.scorePoint, equals(0));
     expect(game.players.first.lastSubmission?.scorePercentage, equals(0));
+  });
+
+  // Ex4 test case
+  test('QuizRepository can read and write JSON', () {
+    final repo = QuizRepository('/Users/nika/Computer_Science/Term1-Year3/Flutter/Lab_Practice/Dart-SE_G4-Y3/W3 - PRACTICE - Dart Layered Architecture/lib/data/quiz.json');
+
+    Question q1 = Question(
+        title: "Capital of France?",
+        choices: ["Paris", "London", "Rome"],
+        goodChoice: "Paris",
+        queScore: 10);
+
+    Quiz quiz = Quiz(questions: [q1]);
+
+    repo.writeQuiz(quiz);
+
+    Quiz loaded = repo.readQuiz();
+
+    expect(loaded.questions.first.title, equals("Capital of France?"));
   });
 }
