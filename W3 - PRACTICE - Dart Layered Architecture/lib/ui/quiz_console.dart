@@ -1,89 +1,57 @@
 import 'dart:io';
-
 import '../domain/quiz.dart';
 
 class QuizConsole {
-  Quiz quiz;
-  final Game game = Game();
+  final Quiz quiz;
 
   QuizConsole({required this.quiz});
 
   void startQuiz() {
     print('--- Welcome to the Quiz ---\n');
 
-    // for (var question in quiz.questions) {
-    //   print('Question: ${question.title} - (${question.queScore} points)');
-    //   print('Choices: ${question.choices}');
-    //   stdout.write('Your answer: ');
-    //   String? userInput = stdin.readLineSync();
-
-    //   // Check for null input
-    //   if (userInput != null && userInput.isNotEmpty) {
-    //     Answer answer = Answer(question: question, answerChoice: userInput);
-    //     quiz.addAnswer(answer);
-    //   } else {
-    //     print('No answer entered. Skipping question.');
-    //   }
-
-    //   print('');
-    // }
-
     while (true) {
       stdout.write('Your name: ');
       String? name = stdin.readLineSync();
+
       if (name == null || name.isEmpty) {
-        print("Quiz finish");
+        print('--- Quiz Finished ---');
         break;
       }
 
       Player player = Player(name);
-      Quiz playerQuiz = Quiz(questions: quiz.questions);
+      print('');
 
-      //Run quiz for this player
-      for (var question in playerQuiz.questions) {
-        print('Question: ${question.title} - (${question.queScore} points)');
+      for (var question in quiz.questions) {
+        print('Question: ${question.title} - ( ${question.point} points )');
         print('Choices: ${question.choices}');
         stdout.write('Your answer: ');
-        String? userInput = stdin.readLineSync();
+        String? input = stdin.readLineSync();
 
-        if (userInput != null && userInput.isNotEmpty) {
-          Answer answer = Answer(question: question, answerChoice: userInput, questionId: '');
-          playerQuiz.addAnswer(answer);
+        if (input != null && input.isNotEmpty) {
+          player.addAnswer(Answer(
+            questionId: question.id,
+            answerChoice: input,
+          ));
         } else {
-          print("No answer!! Skipping question");
+          print('No answer provided.');
         }
+
         print('');
       }
 
-      int scorePoints = playerQuiz.getScoreInPoint();
-      int scorePercent = playerQuiz.getScoreInPercentage();
+      quiz.playerAnswers(name, player.answers);
 
-      // Create a submission and save it
-      Submission submission = Submission(
-        player: player,
-        quiz: playerQuiz,
-        scorePoint: scorePoints,
-        scorePercentage: scorePercent, quizId: '', playerId: '',
-      );
+      int scorePoint = player.getScoreInPoint(quiz);
+      int scorePercentage = player.getScoreInPercentage(quiz);
 
-      game.addSubmission(player, submission);
+      print('${player.name}, your score in percentage: $scorePercentage %');
+      print('${player.name}, your score in points: $scorePoint %\n');
 
-      // Show result
-      print('$name, your score in percentage: $scorePercent %');
-      print('$name, your score in points: $scorePoints\n');
-
-      // Show scoreboard
-      print('--- Player Scores ---');
-      for (var p in game.players) {
-        print('Player: ${p.name}, Score: ${p.lastSubmission?.scorePoint}');
+      for (var p in quiz.getAllPlayers()) {
+        print('Player: ${p.name}\t\tScore:${p.getScoreInPercentage(quiz)}');
       }
+
       print('');
     }
-
-    // int scorePoint = quiz.getScoreInPoint();
-    // int scorePercentage = quiz.getScoreInPercentage();
-    // print('--- Quiz Finished ---');
-    // print('Your score in percentage: $scorePercentage %');
-    // print('Your score in points: $scorePoint');
   }
 }

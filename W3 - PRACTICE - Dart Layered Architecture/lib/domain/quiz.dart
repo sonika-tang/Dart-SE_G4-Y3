@@ -1,111 +1,108 @@
 import 'package:uuid/uuid.dart';
 
-var uuid = Uuid();
+final uuid = Uuid();
 
 class Question {
   final String id;
   final String title;
   final List<String> choices;
   final String goodChoice;
-  final int queScore; //Ex2
+  final int point;
 
-  Question(
-      {String? id,
-      required this.title,
-      required this.choices,
-      required this.goodChoice,
-      this.queScore = 1})
-      : id = id ?? uuid.v4();
+  Question({
+    String? id,
+    required this.title,
+    required this.choices,
+    required this.goodChoice,
+    this.point = 1,
+  }) : id = id ?? uuid.v4();
+
+  int get points => point;
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'choices': choices,
+      'goodChoice': goodChoice,
+      'points': point,
+    };
+  }
 }
 
 class Answer {
-  final String id;
-  final Question question;
+  final String questionId;
   final String answerChoice;
 
-  Answer({String? id, required this.question, required this.answerChoice, required String questionId})
-      : id = id ?? uuid.v4();
+  Answer({required this.questionId, required this.answerChoice});
 
-  bool isGood() {
-    return this.answerChoice == question.goodChoice;
+  bool isGood(Quiz quiz) {
+    final question = quiz.getQuestionById(questionId);
+    return question != null && answerChoice == question.goodChoice;
+  }
+
+  int getPoint(Quiz quiz) {
+    final question = quiz.getQuestionById(questionId);
+    return isGood(quiz) ? (question?.point ?? 0) : 0;
+  }
+}
+
+class Player {
+  final String name;
+  final List<Answer> answers = [];
+
+  Player(this.name);
+
+  void addAnswer(Answer answer) {
+    answers.add(answer);
+  }
+
+  void clearAnswers() {
+    answers.clear();
+  }
+
+  int getScoreInPoint(Quiz quiz) {
+    return answers.fold(0, (sum, a) => sum + a.getPoint(quiz));
+  }
+
+  int getScoreInPercentage(Quiz quiz) {
+    final maxScore = quiz.getMaxScore();
+    return maxScore == 0
+        ? 0
+        : ((getScoreInPoint(quiz) / maxScore) * 100).toInt();
   }
 }
 
 class Quiz {
   final String id;
-  List<Question> questions;
-  List<Answer> answers = [];
-  int index = 0;
+  final List<Question> questions;
+  final Map<String, Player> players = {};
 
   Quiz({String? id, required this.questions}) : id = id ?? uuid.v4();
 
-  void addAnswer(Answer asnwer) {
-    this.answers.add(asnwer);
+  int getMaxScore() {
+    return questions.fold(0, (sum, q) => sum + q.point);
   }
 
-  Question get currentQuestion => questions[index]; //Ex2
-
-  int getScoreInPoint() {
-    //Ex2
-    int totalSCore = 0;
-
-    for (Answer answer in answers) {
-      if (answer.isGood()) {
-        totalSCore += answer.question.queScore;
-      }
+  /// Records answers for a player
+  void playerAnswers(String playerName, List<Answer> answers) {
+    final player = players[playerName] ?? Player(playerName);
+    player.clearAnswers();
+    for (var answer in answers) {
+      player.addAnswer(answer);
     }
-    return totalSCore;
+    players[playerName] = player;
   }
 
-  int getScoreInPercentage() {
-    int totalScore = getScoreInPoint();
-    int maxScore = questions.fold(0, (sum, q) => sum + q.queScore);
-    return ((totalScore / maxScore) * 100).toInt();
-  }
-}
+  Player? getPlayer(String name) => players[name];
 
-///EX3 implementation
-class Submission {
-  final String id;
-  // final Player player;
-  // final Quiz quiz;
-  final String playerId;
-  final String quizId;
-  final int scorePoint;
-  final int scorePercentage;
+  List<Player> getAllPlayers() => players.values.toList();
 
-  Submission(
-      {String? id,
-      // required this.player,
-      // required this.quiz,
-      required this.quizId,
-      required this.playerId,
-      required this.scorePoint,
-      required this.scorePercentage, required Player player, required Quiz quiz})
-      : id = id ?? uuid.v4();
-}
-
-class Player {
-  final String id;
-  final String name;
-  Submission? lastSubmission;
-
-  Player(this.name, {String? id}) : id = id ?? uuid.v4();
-}
-
-class Game {
-  final List<Player> players = [];
-
-  /// Add or update a submission for a player
-  void addSubmission(Player player, Submission submission) {
-    Player? existing = players.firstWhere((p) => p.name == player.name,
-        orElse: () => Player(""));
-
-    if (existing.name.isNotEmpty) {
-      existing.lastSubmission = submission;
-    } else {
-      player.lastSubmission = submission;
-      players.add(player);
+  Question? getQuestionById(String id) {
+    try {
+      return questions.firstWhere((q) => q.id == id);
+    } catch (_) {
+      return null;
     }
   }
 }
