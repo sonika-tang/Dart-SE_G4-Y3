@@ -57,10 +57,6 @@ class Player {
     answers.add(answer);
   }
 
-  void clearAnswers() {
-    answers.clear();
-  }
-
   int getScoreInPoint(Quiz quiz) {
     return answers.fold(0, (sum, a) => sum + a.getPoint(quiz));
   }
@@ -87,7 +83,6 @@ class Quiz {
   /// Records answers for a player
   void playerAnswers(String playerName, List<Answer> answers) {
     final player = players[playerName] ?? Player(playerName);
-    player.clearAnswers();
     for (var answer in answers) {
       player.addAnswer(answer);
     }
