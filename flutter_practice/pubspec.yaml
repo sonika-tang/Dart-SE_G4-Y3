@@ -89,10 +89,6 @@ flutter:
   # see https://flutter.dev/to/font-from-package
 
   assets:
-    - /Users/nika/Computer_Science/Term1-Year3/Flutter/Lab_Practice/Dart-SE_G4-Y3/flutter_practice/lib/w5_practice/assets/ex3/dart.png
-    - /Users/nika/Computer_Science/Term1-Year3/Flutter/Lab_Practice/Dart-SE_G4-Y3/flutter_practice/lib/w5_practice/assets/ex3/firebase.png
-    - /Users/nika/Computer_Science/Term1-Year3/Flutter/Lab_Practice/Dart-SE_G4-Y3/flutter_practice/lib/w5_practice/assets/ex3/flutter.png
-    - /Users/nika/Computer_Science/Term1-Year3/Flutter/Lab_Practice/Dart-SE_G4-Y3/flutter_practice/lib/w5_practice/assets/ex4/veryCloudy.png
-    - /Users/nika/Computer_Science/Term1-Year3/Flutter/Lab_Practice/Dart-SE_G4-Y3/flutter_practice/lib/w5_practice/assets/ex4/sunnyCloudy.png
-    - /Users/nika/Computer_Science/Term1-Year3/Flutter/Lab_Practice/Dart-SE_G4-Y3/flutter_practice/lib/w5_practice/assets/ex4/sunny.png
-    - /Users/nika/Computer_Science/Term1-Year3/Flutter/Lab_Practice/Dart-SE_G4-Y3/flutter_practice/lib/w5_practice/assets/ex4/cloudy.png
+    - assets/images/
+    - assets/ex3/
+    - assets/ex4/
