@@ -44,7 +44,7 @@ class ExpenseItem extends StatelessWidget {
       case ExpenseType.food:
         return Icons.lunch_dining;
       case ExpenseType.travel:
-        return Icons.flight_takeoff;
+        return Icons.travel_explore;
       case ExpenseType.leisure:
         return Icons.movie;
       case ExpenseType.work:

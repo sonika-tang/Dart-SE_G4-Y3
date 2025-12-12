@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import '../model/expense_model.dart'; 
-import '../data/expense_data.dart'; 
-import './expenses_list.dart'; 
-import './new_expense.dart';
+import 'package:flutter_practice/expense/ui/text.dart';
+import '../model/expense_model.dart';
+import '../data/expense_data.dart';
+import './expenses_list.dart';
+// import './new_expense.dart';
 
 class Expenses extends StatefulWidget {
   const Expenses({super.key});
@@ -14,18 +15,35 @@ class Expenses extends StatefulWidget {
 class _ExpensesState extends State<Expenses> {
   final List<Expense> _registeredExpenses = initialExpenses;
 
-  void _addExpense(Expense expense) {
-    setState(() {
-      _registeredExpenses.add(expense);
-    });
-  }
+  // void _addExpense(Expense expense) {
+  //   setState(() {
+  //     _registeredExpenses.add(expense);
+  //   });
+  // }
 
-  void _openAddExpenseOverlay() {
-    showModalBottomSheet(
+  // void _openAddExpenseOverlay() async {
+  //   await showModalBottomSheet<Expense>(
+  //     context: context,
+  //     isScrollControlled:
+  //         true, // Allows the modal to take full screen height if needed
+  //     // builder: (ctx) => NewExpense(onAddExpense: _addExpense),
+  //     builder: (ctx) => ExpenseForm(),
+  //   );
+  // }
+
+  void onAddClicked(BuildContext context) async {
+    Expense? newExpense = await showModalBottomSheet<Expense>(
+      isScrollControlled: false,
       context: context,
-      isScrollControlled: true, // Allows the modal to take full screen height if needed
-      builder: (ctx) => NewExpense(onAddExpense: _addExpense), 
+      builder: (c) => Center(child: ExpenseForm()),
     );
+    if (newExpense != null) {
+      setState(() {
+        _registeredExpenses.add(newExpense);
+      });
+    } else {
+      print("created has been canceled");
+    }
   }
 
   @override
@@ -38,40 +56,19 @@ class _ExpensesState extends State<Expenses> {
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
-            onPressed: _openAddExpenseOverlay
+            onPressed: () => {onAddClicked(context)},
           ),
         ],
       ),
       body: Container(
-        margin: EdgeInsets.only(left: 10,right: 10),
+        margin: EdgeInsets.only(left: 10, right: 10),
         child: Column(
           children: [
-            Container(
-              height: 50,
-              width: double.infinity,
-              padding: const EdgeInsets.all(10), 
-              margin: EdgeInsets.only(top: 20, bottom: 10),
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(20)), 
-                color: Colors.white 
-              ),
-              
-              child: const Center(
-                child: Text(
-                  'Filter', 
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold, 
-                    fontSize: 20,
-                    color: Colors.black, 
-                  ),
-                ),
-              ),
-            ),
-            
-            Expanded( // Expanded is required because ListView.builder needs bounded height
-              child: ExpensesList(
-                expenses: _registeredExpenses, 
-              ),
+            SizedBox(height: 10),
+
+            Expanded(
+              // Expanded is required because ListView.builder needs bounded height
+              child: ExpensesList(expenses: _registeredExpenses),
             ),
           ],
         ),
